@@ -14,22 +14,12 @@ class Expense {
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': String id,
-        'title': String title,
-        'amount': double amount,
-        'category': String category,
-        'date': DateTime date,
-      } => 
-      Expense(
-        title: title,
-        id: id,
-        amount: amount,
-        category: category,
-        date: date,
-      ),
-      _ => throw const FormatException('Expense.fromJson: Unexpected JSON structure'),
-    };
+    return Expense(
+      id: json['_id'], // Now it's a string, no need for '$oid'
+      title: json['title'],
+      amount: json['amount'].toDouble(),
+      category: json['category'],
+      date: DateTime.parse(json['date']), // Parse the ISO string into DateTime
+    );
   }
 }

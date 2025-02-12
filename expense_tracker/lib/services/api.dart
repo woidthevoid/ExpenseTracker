@@ -5,16 +5,21 @@ import '../model/expense.dart';
 class APIService {
   static const String _url = 'http://localhost:5001';
 
-  Future<List<Expense>> fetchExpenses() async {
-    final response = await http.get(Uri.parse('$_url/expenses'));
+Future<List<Expense>> fetchExpenses() async {
+  final response = await http.get(Uri.parse('$_url/expenses'));
 
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
-      return jsonResponse.map((json) => Expense.fromJson(json as Map<String, dynamic>)).toList();
+  if (response.statusCode == 200) {
+    final body = jsonDecode(response.body);
+  
+    if (body is List<dynamic>) {
+      return body.map((json) => Expense.fromJson(json as Map<String, dynamic>)).toList();
     } else {
-      throw Exception('Failed to fetch expenses');
+      throw Exception('Unexpected response format: ${response.body}');
     }
+  } else {
+    throw Exception('Failed to fetch expenses: ${response.statusCode}');
   }
+}
 
   Future<void> deleteExpense(String id) async {
     final response = await http.delete(Uri.parse('$_url/expenses/$id'));

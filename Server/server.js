@@ -2,8 +2,9 @@ const express = require('express');
 const corst = require('cors');
 const mongoose = require('mongoose');
 const body = require('body-parser');
+require('dotenv').config();
 
-const uri = "mongodb+srv://admin:XOg380Rk88i3oY0W@expensesapp.x7mpm.mongodb.net/?retryWrites=true&w=majority&appName=ExpensesApp";;
+const uri = process.env.MONGO_URI;
 
 const app = express();
 const port = 5001;
@@ -17,7 +18,6 @@ mongoose.connect(uri, {
   .catch(err => console.error(err));
 
   const expenseSchema = new mongoose.Schema({
-    id: Number,
     title: String,
     amount: Number,
     category: String,
@@ -28,8 +28,12 @@ const Expense = mongoose.model("Expense", expenseSchema);
 
 //Routes
 app.get('/expenses', async (req, res) => {
+  try {
     const expenses = await Expense.find();
     res.json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching expenses", error });
+  }
 });
 
 app.post('/expenses', async (req, res) => {
@@ -37,5 +41,10 @@ app.post('/expenses', async (req, res) => {
     await expense.save();
     res.json(expense);
 });
+
+app.delete('/expenses/:id', async (req, res) => {
+  const result = await Expense.deleteOne({id: req.params.id});
+  res.json(result);
+})
 
 app.listen(port, () => console.log('Server is running on port ' + port));
