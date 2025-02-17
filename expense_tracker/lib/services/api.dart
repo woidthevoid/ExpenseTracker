@@ -24,7 +24,7 @@ Future<List<Expense>> fetchExpenses() async {
   Future<void> deleteExpense(String id) async {
     final response = await http.delete(Uri.parse('$_url/expenses/$id'));
 
-    if(response.statusCode != 200) {
+    if(response.statusCode == 404) {
       throw Exception('Failed to delete expense');
     }
   }

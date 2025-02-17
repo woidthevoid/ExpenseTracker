@@ -43,8 +43,11 @@ app.post('/expenses', async (req, res) => {
 });
 
 app.delete('/expenses/:id', async (req, res) => {
-  const result = await Expense.deleteOne({id: req.params.id});
-  res.json(result);
+  const result = await Expense.deleteOne({_id: req.params.id});
+  if(result.deletedCount === 0) {
+    return res.status(404).json({message: "Expense not found"});
+  }
+  res.json({message: "Expense deleted"});
 })
 
 app.listen(port, () => console.log('Server is running on port ' + port));

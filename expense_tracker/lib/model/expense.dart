@@ -15,11 +15,11 @@ class Expense {
 
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
-      id: json['_id'], // Now it's a string, no need for '$oid'
+      id: json['_id'], 
       title: json['title'],
       amount: json['amount'].toDouble(),
       category: json['category'],
-      date: DateTime.parse(json['date']), // Parse the ISO string into DateTime
+      date: DateTime.parse(json['date']), 
     );
   }
 }
