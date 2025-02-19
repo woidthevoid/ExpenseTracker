@@ -36,10 +36,15 @@ app.get('/expenses', async (req, res) => {
   }
 });
 
-app.post('/expenses', async (req, res) => {
-    const expense = new Expense(req.body);
+app.post("/expenses", async (req, res) => {
+  try {
+    const { title, amount, category } = req.body;
+    const expense = new Expense({ title, amount, category });
     await expense.save();
-    res.json(expense);
+    res.status(201).json(expense);
+  } catch (e) {
+    res.status(500).json({ message: "Error creating expense", e });
+  }
 });
 
 app.delete('/expenses/:id', async (req, res) => {

@@ -28,4 +28,16 @@ Future<List<Expense>> fetchExpenses() async {
       throw Exception('Failed to delete expense');
     }
   }
+
+  Future<void> addExpense(Expense expense) async {
+    final response = await http.post(
+      Uri.parse('$_url/expenses'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(expense.toJson()),
+      );
+
+    if(response.statusCode != 201) {
+      throw Exception('Failed to add expense');
+    }
+  }
 }
