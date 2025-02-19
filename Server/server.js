@@ -2,8 +2,9 @@ const express = require('express');
 const corst = require('cors');
 const mongoose = require('mongoose');
 const body = require('body-parser');
+require('dotenv').config();
 
-const uri = "mongodb+srv://admin:XOg380Rk88i3oY0W@expensesapp.x7mpm.mongodb.net/?retryWrites=true&w=majority&appName=ExpensesApp";;
+const uri = process.env.MONGO_URI;
 
 const app = express();
 const port = 5001;
@@ -17,7 +18,6 @@ mongoose.connect(uri, {
   .catch(err => console.error(err));
 
   const expenseSchema = new mongoose.Schema({
-    id: Number,
     title: String,
     amount: Number,
     category: String,
@@ -28,14 +28,31 @@ const Expense = mongoose.model("Expense", expenseSchema);
 
 //Routes
 app.get('/expenses', async (req, res) => {
+  try {
     const expenses = await Expense.find();
     res.json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching expenses", error });
+  }
 });
 
-app.post('/expenses', async (req, res) => {
-    const expense = new Expense(req.body);
+app.post("/expenses", async (req, res) => {
+  try {
+    const { title, amount, category } = req.body;
+    const expense = new Expense({ title, amount, category });
     await expense.save();
-    res.json(expense);
+    res.status(201).json(expense);
+  } catch (e) {
+    res.status(500).json({ message: "Error creating expense", e });
+  }
 });
+
+app.delete('/expenses/:id', async (req, res) => {
+  const result = await Expense.deleteOne({_id: req.params.id});
+  if(result.deletedCount === 0) {
+    return res.status(404).json({message: "Expense not found"});
+  }
+  res.json({message: "Expense deleted"});
+})
 
 app.listen(port, () => console.log('Server is running on port ' + port));
