@@ -7,7 +7,7 @@ require('dotenv').config();
 const uri = process.env.MONGO_URI;
 
 const app = express();
-const port = 5001;
+const port = process.env.PORT || 5001;
 
 app.use(corst());
 app.use(body.json());

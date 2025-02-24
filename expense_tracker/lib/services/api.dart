@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/expense.dart';
 
 class APIService {
-  static const String _url = 'http://localhost:5001';
+  static const String _url = 'https://expensetracker-cmdq.onrender.com';
 
 Future<List<Expense>> fetchExpenses() async {
   final response = await http.get(Uri.parse('$_url/expenses'));
