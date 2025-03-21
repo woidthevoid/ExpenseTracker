@@ -1,3 +1,4 @@
+import 'package:expense_tracker/components/ExpenseChart.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/components/ExpenseForm.dart';
 import 'package:expense_tracker/model/expense.dart';
@@ -11,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Expense> expenses = [];
   bool isLoading = true;
+  ChartType _selectedChartType = ChartType.line;
 
   @override
   void initState() {
@@ -86,57 +88,90 @@ class _HomeScreenState extends State<HomeScreen> {
               ? Center(child: Text('No expenses found'))
               : RefreshIndicator(
                   onRefresh: fetchExpenses,
-                  child: ListView.builder(
-                    itemCount: expenses.length,
-                    itemBuilder: (context, index) {
-                      final expense = expenses[index];
-                      return Dismissible(
-                        key: Key(expense.id!),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Icon(Icons.delete, color: Colors.white),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: expenses.length,
+                          itemBuilder: (context, index) {
+                            final expense = expenses[index];
+                            return Dismissible(
+                              key: Key(expense.id!),
+                              direction: DismissDirection.endToStart,
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Icon(Icons.delete, color: Colors.white),
+                              ),
+                              confirmDismiss: (direction) async {
+                                return await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm deletion'),
+                                      content: Text(
+                                          'Are you sure you want to delete this expense?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('OK'),
+                                          onPressed: () async {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              onDismissed: (direction) async {
+                                if (expense.id != null) {
+                                  await deleteThisExpense(expense.id!);
+                                }
+                              },
+                              child: ListTile(
+                                title: Text(expense.title),
+                                subtitle: Text(
+                                    '${expense.amount.toStringAsFixed(2)} DKK'),
+                                trailing: Text(expense.category),
+                              ),
+                            );
+                          },
                         ),
-                        confirmDismiss: (direction) async {
-                          return await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Confirm deletion'),
-                                content: Text(
-                                    'Are you sure you want to delete this expense?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop(false);
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text('OK'),
-                                    onPressed: () async {
-                                      Navigator.of(context).pop(true);
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        onDismissed: (direction) async {
-                          if (expense.id != null) {
-                            await deleteThisExpense(expense.id!);
-                          }
-                        },
-                        child: ListTile(
-                          title: Text(expense.title),
-                          subtitle: Text('${expense.amount.toStringAsFixed(2)} DKK'),
-                          trailing: Text(expense.category),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text('Select Chart Type'),
+                            Slider(
+                              value: _selectedChartType.index.toDouble(),
+                              min: 0,
+                              max: ChartType.values.length - 1,
+                              divisions: ChartType.values.length - 1,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedChartType =
+                                      ChartType.values[value.toInt()];
+                                });
+                              },
+                              label:
+                                  _selectedChartType.toString().split('.').last,
+                            ),
+                            ExpenseChart(
+                              expenses: expenses,
+                              type: _selectedChartType,
+                            ),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
       floatingActionButton: FloatingActionButton(
