@@ -6,9 +6,8 @@ With a easy to use UI and graph representation of your spendings in nice and eas
 
 
 ## Screenshots
-
-![App Screenshot](screenshots/Simulator%20Screenshot%20-%20iPhone%2015%20-%202025-03-26%20at%2015.18.47.png)
-![App Screenshot](screenshots/Simulator%20Screenshot%20-%20iPhone%2015%20-%202025-03-26%20at%2015.19.09.png)
+<img src="screenshots/Simulator%20Screenshot%20-%20iPhone%2015%20-%202025-03-26%20at%2015.18.47.png" alt="App Screenshot" width="300">
+<img src="screenshots/Simulator%20Screenshot%20-%20iPhone%2015%20-%202025-03-26%20at%2015.19.09.png" alt="App Screenshot" width="300">
 
 
 ## Installation
