@@ -1,1 +1,0 @@
-This is a simple expense tracker. Requires to run backend locally.
